@@ -59,3 +59,6 @@ return 301 https://$server_name$request_uri;
 ```
 
 > 重启 nginx
+
+
+
