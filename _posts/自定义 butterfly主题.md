@@ -11,14 +11,14 @@ categories:
 
 ##  页脚透明
 
-`vi themes/butterfly/layout/includes/layout.pug` 添加以下内容
+> `vi themes/butterfly/layout/includes/layout.pug` 添加以下内容
 
 ```nsis
 if !is_post()
 - var footer_bg = 'background-color: transparent;'
 ```
 
-在下面位置添加
+> 在下面位置添加
 
 ```
 if !is_post()
@@ -36,14 +36,14 @@ if !is_post()
 
 ## 页脚心跳
 
-`vi themes/butterfly/layout/includes/footer.pug` 修改内容
+> `vi themes/butterfly/layout/includes/footer.pug` 修改内容
 
 ```html
 &nbsp;<i style="color:#FF6A6A;animation: announ_animation 0.8s linear infinite;"class="fas fa-heart"></i>
 
 ```
 
-修改位置
+> 修改位置
 
 ```html
 #footer-wrap
@@ -65,7 +65,7 @@ if !is_post()
 ~                                   
 ```
 
-原文地址：https://ifibe.com/posts/1db0a89f/index.html
+> 原文地址：https://ifibe.com/posts/1db0a89f/index.html
 
 ## 其他
 
