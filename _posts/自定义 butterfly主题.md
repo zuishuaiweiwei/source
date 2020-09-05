@@ -31,6 +31,7 @@ if !is_post()
     !=partial('includes/third-party/search/index', {}, {cache:theme.fragment_cache})
     include ./additional-js.pug
 
+
 ```
 
 ## 页脚心跳
