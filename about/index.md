@@ -2,7 +2,7 @@
 title: about
 date: 2020-09-07 20:26:44
 type: "about"h
-comment: false
+comments: false
 ---
 # 关于
 
