@@ -19,7 +19,7 @@ categories:
 ```
 cd /usr/local
 git clone https://github.com/certbot/certbot
-cd cerbot
+cd certbot
 systemctl stop nginx 
 ./letsencrypt-auto certonly --standalone --email zuishuaiweiwei@gmail.com -d zuishuaiweiwei.com -d www.zuishuaiweiwei.com
 ```
