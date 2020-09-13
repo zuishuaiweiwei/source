@@ -10,7 +10,7 @@ categories:
 
 ## 问题
 
-> 阿里云 vps 无法连接 github ，可以使用梯子代理 socks5，用 proxychains 让 vps 走 代理的端口
+> 阿里云 `vps` 无法连接 `github` ，可以使用梯子代理 `socks5`，用 `proxychains` 让 `vps` 走代理的端口
 
 ## v2ray
 
