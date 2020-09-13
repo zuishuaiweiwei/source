@@ -1,3 +1,11 @@
+---
+title:   Vps 使用 Proxychains
+date: 2020-09-13 10:25:54
+tags: 
+ - proxychains
+categories: 
+ - linux
+---
 # 阿里云 Vps 使用 Proxychains
 
 ## 问题
@@ -10,7 +18,7 @@
 
 
 
-> 自己的梯子是 vmess 协议的，其他协议另外百度
+> 自己的梯子是 `vmess` 协议的，其他协议另外百度
 
 安装脚本
 
@@ -38,7 +46,7 @@ systemctl disable v2ray # 移除v2ray开机自启
 
 ### 配置
 
-> 配置文件位置：/usr/local/etc/v2ray/config.json
+> 配置文件位置：`/usr/local/etc/v2ray/config.json`
 
 > 上面的安装脚本不会初始化配置，需要自己添加，我是直接将 win 下的客户端配置复制过去
 
@@ -164,7 +172,7 @@ systemctl disable v2ray # 移除v2ray开机自启
 
 
 
-## proxychins
+## proxychains
 
 ### 安装
 
@@ -180,10 +188,10 @@ make install-config
 
 ### 配置
 
-> 配置文件： /etc/proxychains.conf
+> 配置文件： `/etc/proxychains.conf`
 
-> 将最下边的配置改为自己 v2ray 配置文件里的 ：socks5  127.0.0.1 10808
+> 将最下边的配置改为自己 `v2ray` 配置文件里的 ：`socks5  127.0.0.1 10808`
 
 ## 测试
 
-> wget /curl 命令前 加上 proxychains5
+> `wget` / `curl` 命令前加上 `proxychains5`
