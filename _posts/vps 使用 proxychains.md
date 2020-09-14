@@ -1,5 +1,5 @@
 ---
-title:   Vps 使用 Proxychains
+title:   vps 使用 Proxychains
 date: 2020-09-13 10:25:54
 tags: 
  - proxychains
@@ -23,13 +23,8 @@ categories:
 安装脚本
 
 >curl -O https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh
->
->curl -O https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-dat-release.sh
 
 > bash install-release.sh
->
-> bash install-dat-release.sh
-
 
 
 > 如果 连接不通，可以在浏览器访问，保存脚本到 vps 执行
@@ -194,4 +189,4 @@ make install-config
 
 ## 测试
 
-> `wget` / `curl` 命令前加上 `proxychains5`
+> `wget` / `curl` 命令前加上 `proxychains4`
