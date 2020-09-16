@@ -11,11 +11,10 @@ categories:
 
 ## docker run
 
-> 直接拉取镜像，默认laster版本，需要其他版本提前拉取
+> 直接 `run`，默认 `latest` 版本
 
 ```
 docker run -d --name jenkins -p 8080:8080 -p 50000:50000 -v /usr/local/jenkins:/var/jenkins_home -u root jenkins
-
 ```
 
 > -v ：配置文件持久化到本地
@@ -34,4 +33,4 @@ sed -i 's/updates.jenkins-ci.org\/download/mirrors.tuna.tsinghua.edu.cn\/jenkins
 
 ### 创建用户后跳转失败
 
-> 去掉 url 中的 jenkins
+> 去掉 `url` 中的 `jenkins`

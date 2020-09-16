@@ -1,5 +1,5 @@
 ---
-title: 新主机初始化脚本
+title: vps 初始化脚本
 date: 2020-09-10 10:25:54
 tags: 
  - shell
@@ -7,7 +7,7 @@ categories:
  - linux
  - shell
 ---
-# 新主机初始化脚本
+# vps 初始化脚本
 
 ## 问题
 
@@ -318,33 +318,18 @@ set_selinux() {
 }
 set_vim() {
     if [ -f '/root/.vimrc' ]; then
-        cp /root/.vimrc /root/.vimrc.bak
-        echo -e "${Tip} .vimrc文件存在，备份文件"
+
+     wget https://wei-picgo.oss-cn-beijing.aliyuncs.com/.vimrc.simple
+     echo -e "${Tip} .vimrc文件存在，新文件为 .vimrc.simple"
     else
-        touch $vimrc
+        wget https://wei-picgo.oss-cn-beijing.aliyuncs.com/.vimrc.simple -O /root/.vimrc
+        echo -e "${Tip} .vimrc文件下载完成"
     fi
     if [ ! -d '/root/.vim' ]; then
         mkdir -p /root/.vim/autoload
         cd /root/.vim/autoload
         wget https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     fi
-    echo "call plug#begin('~/.vim/plugged')" >$vimrc
-    echo 'call plug#end()' >>$vimrc
-    echo "let mapleader=' '" >>$vimrc
-    echo 'nnoremap H ^' >>$vimrc
-    echo 'nnoremap L $' >>$vimrc
-    echo 'vnoremap H ^' >>$vimrc
-    echo 'vnoremap L $' >>$vimrc
-    echo 'map - Nzz' >>$vimrc
-    echo 'map = nzz' >>$vimrc
-    echo 'nnoremap <leader>l d$' >>$vimrc
-    echo 'nnoremap <leader>h d0' >>$vimrc
-    echo 'noremap <leader>w :w<CR>' >>$vimrc
-    echo 'noremap <leader>q :q!<CR>' >>$vimrc
-    echo 'noremap <leader>d :yyp' >>$vimrc
-    echo 'nnoremap <C-A> gg^vG$' >>$vimrc
-    echo 'nnoremap <C-s> :w<CR>' >>$vimrc
-    echo 'map <S-CR> $a<CR><ESC>' >>$vimrc
     echo -e "${Info} .vimrc修改完成"
 }
 
