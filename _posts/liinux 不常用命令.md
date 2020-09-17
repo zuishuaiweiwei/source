@@ -1,6 +1,6 @@
 ---
-title: vps 初始化脚本
-date: 2020-09-10 10:25:54
+title: linux 不常用命令
+date: 2020-09-16 10:25:54
 tags: 
  - command
 categories: 
