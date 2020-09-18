@@ -24,4 +24,4 @@ find /root -mtime +110 -type f -name "*.*" -exec rm -Rf {} \;
 >
 >-name：可以过滤文件
 >
->-exec  command {}\：将前面执行的命令，填入 {} 中 ，\ 标识结束
+>-exec [command] {}\：将前面执行的命令，填入 {} 中 ，\ 标识结束

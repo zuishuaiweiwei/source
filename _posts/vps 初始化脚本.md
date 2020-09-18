@@ -17,19 +17,33 @@ categories:
 
 ## 脚本内容列表
 
-- **安装 nodejs**
-- **安装 jdk**
-- **安装 autojump**
-- **安装 trash-cli**
-- **安装 busybox**
-- **设置 vim 快捷键**
-- **常用命令**
+- **安装环境**
+  - **nodejs**
+  - **jdk8**
+  - **python3**
+- **安装基础命令**
   - **git**
   - **wget**
+  - **htop**
+  - **tmux**
+  - **lsof**
+  - **bzip2**
+  - **pstree**
+- **安装进阶命令**
   - **zsh**
   - **oh-my-zsh**
-  - **docker**
+  - **nvim**
+  - **trash-cli**
+  - **autojump**
+  - **busybox**
   - **nginx**
+  - **docker**
+  - **docker-compose**
+  - **v2ray**
+  - **proxychains**
+- **自定义nvim**
+- **自定义alias**
+- **自定义zsh**
 - **设置时区**
 
 ## 准备工作
@@ -231,7 +245,7 @@ install_trashCli() {
     fi
 }
 
-install_autojumpCommand() {
+install_autojump() {
     if [[ -x $(command -v autojump) ]]; then
         echo -e "${Info} autojump 已存在"
     else
@@ -319,8 +333,8 @@ set_selinux() {
 set_vim() {
     if [ -f '/root/.vimrc' ]; then
 
-     wget https://wei-picgo.oss-cn-beijing.aliyuncs.com/.vimrc.simple
-     echo -e "${Tip} .vimrc文件存在，新文件为 .vimrc.simple"
+        wget https://wei-picgo.oss-cn-beijing.aliyuncs.com/.vimrc.simple
+        echo -e "${Tip} .vimrc文件存在，新文件为 .vimrc.simple"
     else
         wget https://wei-picgo.oss-cn-beijing.aliyuncs.com/.vimrc.simple -O /root/.vimrc
         echo -e "${Tip} .vimrc文件下载完成"
@@ -333,7 +347,7 @@ set_vim() {
     echo -e "${Info} .vimrc修改完成"
 }
 
-set_alias() {
+customize_alias() {
     echo 'alias rm="Please use <trash-put> command to delete file.";false' >>$zshrc
     echo "alias tp='trash-put'" >>$zshrc
     echo "alias tl='trash-list'" >>$zshrc
@@ -342,11 +356,12 @@ set_alias() {
     echo "alias src='source /etc/profile'" >>$zshrc
     echo "alias srcc='source $zshrc'" >>$zshrc
     echo "alias pp='pstree -p'" >>$zshrc
+    echo "alias top='htop'" >>$zshrc
     source $zshrc
     echo -e "${Info} 设置 alias 完成"
 }
 
-set_zshrc() {
+customize_zshrc() {
     sed -i 's/^ZSH_THEME.*$/ZSH_THEME="ys"/g' $zshrc
     v='plugins=(git zsh-autosuggestions zsh-syntax-highlighting extract vi-mode)'
     sed -i "s/^plugins.*)$/$v/g" $zshrc
@@ -417,6 +432,44 @@ install_dcoker() {
     fi
 }
 
+install_nvim() {
+    if [[ -x $(command -v nvim) ]]; then
+        echo -e "${Info} nvim 已存在"
+    else
+        yum install -y nvim
+        if [[ ! -x $(command -v pip) ]]; then
+            echo -e "${Error} 未找到 pip 命令"
+        else
+            pip install neovim
+        fi
+        if [[ ! -x $(command -v npm) ]]; then
+            echo -e "${Error} 未找到 npm 命令"
+        else
+            npm install -g neovim
+        fi
+        if [[ -x $(command -v nvim) ]]; then
+            echo -e "${Info} nvim 安装完成"
+        else
+            echo -e "${Info} nvim 安装失败"
+        fi
+    fi
+}
+
+customize_nvim() {
+    if [[ ! -x $(command -v nvim) ]]; then
+        echo -e "${Error} 未找到 nvim "
+    else
+
+        if [ -d '/root/.config/nvim' ]; then
+            mv /root/.config/nvim /root/.config/nvim_bak
+            echo -e "${Tip} /root/.config/nvim 目录已存在 已重命名为nvim_bak"
+        fi
+        mkdir -p /root/.config/nvim/autoload
+        wget https://wei-picgo.oss-cn-beijing.aliyuncs.com/init.vim -O /root/.config/nvim
+        wget -P /root/.config/nvim/autoload https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    fi
+}
+
 install_python3() {
 
     if [[ -n $(python -V | awk '{print $2}' | grep '^3.*') ]]; then
@@ -467,88 +520,95 @@ all() {
 }
 
 echo -e "  初始化脚本
-  ${Green_font_prefix}1.${Font_color_suffix} 安装 常用命令（wget/git/lsof/bzip2/gcc/nginx/pstree）
-  ${Green_font_prefix}2.${Font_color_suffix} 安装 jdk
-  ${Green_font_prefix}2.${Font_color_suffix} 安装 python3
-  ${Green_font_prefix}3.${Font_color_suffix} 安装 zsh
-  ${Green_font_prefix}4.${Font_color_suffix} 安装 oh-my-zsh
-  ${Green_font_prefix}5.${Font_color_suffix} 安装 nodejs
-  ${Green_font_prefix}6.${Font_color_suffix} 安装 trash-cli
-  ${Green_font_prefix}7.${Font_color_suffix} 安装 busybox
-  ${Green_font_prefix}8.${Font_color_suffix} 安装 docker
-  ${Green_font_prefix}9.${Font_color_suffix} 安装 docker-compose
-  ${Green_font_prefix}9.${Font_color_suffix} 安装 autojump
-  ${Green_font_prefix}1a.${Font_color_suffix} 安装 proxychains
-  ${Green_font_prefix}1b.${Font_color_suffix} 安装 v2ary
-————————————
- ${Green_font_prefix}21.${Font_color_suffix} 关闭 selinux
- ${Green_font_prefix}22.${Font_color_suffix} 设置 vim
- ${Green_font_prefix}23.${Font_color_suffix} 设置 时区
- ${Green_font_prefix}24.${Font_color_suffix} 设置 自定义alias
- ${Green_font_prefix}25.${Font_color_suffix} 设置 自定义zsh
-————————————
- ${Green_font_prefix}xx.${Font_color_suffix} 全部安装
+——————————— 安装环境
+  ${Green_font_prefix}1a.${Font_color_suffix} 安装 jdk
+  ${Green_font_prefix}1b.${Font_color_suffix} 安装 python3
+  ${Green_font_prefix}1c.${Font_color_suffix} 安装 nodejs
+ ———————————— 安装基础命令 
+  ${Green_font_prefix}2a.${Font_color_suffix} 安装 git/wget/htop/tmux/lsof/bzip2/gcc/pstree
+ ———————————— 安装进阶命令
+  ${Green_font_prefix}3a.${Font_color_suffix} 安装 oh-my-zsh
+  ${Green_font_prefix}3b.${Font_color_suffix} 安装 nvim
+  ${Green_font_prefix}3c.${Font_color_suffix} 安装 trash-cli
+  ${Green_font_prefix}3d.${Font_color_suffix} 安装 autojump
+  ${Green_font_prefix}3e.${Font_color_suffix} 安装 busybox
+  ${Green_font_prefix}3f.${Font_color_suffix} 安装 nginx
+  ${Green_font_prefix}3g.${Font_color_suffix} 安装 docker
+  ${Green_font_prefix}3h.${Font_color_suffix} 安装 docker-compose
+  ${Green_font_prefix}3i.${Font_color_suffix} 安装 proxychains
+  ${Green_font_prefix}3j.${Font_color_suffix} 安装 v2ary
+———————————— 自定义
+ ${Green_font_prefix}4a.${Font_color_suffix} 自定义 nvim
+ ${Green_font_prefix}4b.${Font_color_suffix} 自定义 alias
+ ${Green_font_prefix}4c.${Font_color_suffix} 设置 自定义zsh
+———————————— 其他
+ ${Green_font_prefix}5a.${Font_color_suffix} 关闭 selinux
+ ${Green_font_prefix}5b.${Font_color_suffix} 设置 上海时区
  "
 echo && read -p "请输入符合 ：" num
 case "$num" in
-1)
-    install_command git wget lsof bzip2 gcc nginx
-    install_pstree
-    ;;
-2)
+1a)
     install_jdk
     ;;
-3)
-    install_command zsh
+1b)
+    install_python3
     ;;
-4)
-    install_ohMyZshCommand
-    ;;
-5)
+1c)
     install_nodejs
     ;;
-6)
+2a)
+    install_command git wget htop tmux lsof bzpi2 gcc pstree
+    ;;
+3a)
+    install_ohMyZshCommand
+    ;;
+3b)
+    install_nvim
+    ;;
+3c)
     install_trashCli
     ;;
-7)
+3d)
+    install_autojump
+    ;;
+3e)
     install_busybox
     ;;
-8)
+3f)
+    install_nginx
+    ;;
+3g)
     install_docker
     ;;
-9)
-    install_autojumpCommand
+3h)
+    install_docker_compose
     ;;
-1a)
-    install_v2ray
-    ;;
-1b)
+3i)
     install_proxychains
     ;;
-21)
+3j)
+    install_v2ray
+    ;;
+
+4a)
+    customize_nvim
+    ;;
+4b)
+    customize_alias
+    ;;
+4c)
+    customize_zshrc
+    ;;
+
+5a)
     set_selinux
     ;;
-22)
-    set_vim
-    ;;
-23)
-    set_localt wime
-    ;;
-24)
-    set_alias
-    ;;
-25)
-    set_zshrc
-    ;;
-xx)
-    all
+5b)
+    set_localtime
     ;;
 *)
     echo -e "${Error} 请输入正确的符号"
     ;;
 esac
-
-
-
 
 ```
