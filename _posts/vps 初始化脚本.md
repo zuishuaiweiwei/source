@@ -212,13 +212,10 @@ install_nodejs() {
     if [[ $? -eq 0 ]]; then
         echo -e "${Info} nodejs 已存在"
     else
-        cd /usr/local
-        wget https://nodejs.org/dist/v14.9.0/node-v14.9.0-linux-x64.tar.xz
-        tar -xvf node-v14.9.0-linux-x64.tar.xz
-        mv node-v14.9.0-linux-x64 nodejs
-        echo 'export PATH=$PATH:/usr/local/nodejs/bin' >>/etc/profile
-        source /etc/profile
-        command -v node >/dev/null 2>&1
+        wget https://nodejs.org/dist/v14.9.0/node-v14.9.0-linux-x64.tar.xz -P /usr/local
+        tar -xvf node-v14.9.0-linux-x64.tar.xz && mv node-v14.9.0-linux-x64 nodejs
+
+        echo 'export PATH=$PATH:/usr/local/nodejs/bin' >>/etc/profile && source /etc/profile && command -v node >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
             echo -e "${Info} nodejs 安装成功"
         else
@@ -246,10 +243,8 @@ install_trashCli() {
     if [[ $? -eq 0 ]]; then
         echo -e "${Info} trash-cli 已存在"
     else
-        cd /usr/local
-        git clone https://github.com/andreafrancia/trash-cli.git
-        cd trash-cli
-        python setup.py install
+        git clone https://github.com/andreafrancia/trash-cli.git /usr/local/trash-cli
+        python /usr/local/trash-cli/setup.py install
         command -v trash-put >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
             echo -e "${Info} trash-cli 安装成功"
@@ -264,10 +259,9 @@ install_autojump() {
     if [[ $? -eq 0 ]]; then
         echo -e "${Info} autojump 已存在"
     else
-        cd /usr/local
-        git clone git://github.com/joelthelion/autojump.git
-        cd autojump
-        ./install.py
+        git clone git://github.com/joelthelion/autojump.git /usr/local/autojump
+
+        python /usr/local/autojump/install.py
         echo '[[ -s ~/.autojump/etc/profile.d/autojump.sh ]] && . ~/.autojump/etc/profile.d/autojump.sh' >>$zshrc
         command -v autojump >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
@@ -279,6 +273,16 @@ install_autojump() {
 }
 
 install_ohMyZshCommand() {
+    if [[ $? -ne 0 ]]; then
+        echo -e "${Info} zsh未安装"
+        exit 1
+    fi
+    if [[ ! -f $zshrc ]]; then
+        echo -e "${Info} zsh 配置文件 未找到"
+        exit 1
+    fi
+    command -v zsh > /dev/null 2>&1
+
     if [[ -d '/root/.oh-my-zsh' ]]; then
         echo -e "${Info} oh-my-zsh 已存在"
     else
@@ -294,6 +298,20 @@ install_ohMyZshCommand() {
             echo -e "${Info} oh-my-zsh 安装成功"
         else
             echo -e "${Error} oh-my-zsh 安装失败"
+        fi
+    fi
+}
+install_zsh() {
+    command -v zsh
+    if [[ $? -eq 0 ]]; then
+        echo -e "${Info} zsh 已存在"
+    else
+        yum -y install zsh
+        command -v zsh
+        if [[ $? -eq 0 ]]; then
+            echo -e "${Info} zsh 安装成功"
+        else
+            echo -e "${Error} zsh 安装失败"
         fi
     fi
 }
@@ -341,11 +359,8 @@ install_busybox() {
         echo -e "${Info} busybox 已存在"
     else
         cd /usr/local
-        wget https://busybox.net/downloads/busybox-1.31.0.tar.bz2
-        tar -xjvf busybox-1.31.0.tar.bz2
-        cd /usr/local/busybox-1.31.0/
-        make defconfig
-        make install
+        wget https://busybox.net/downloads/busybox-1.31.0.tar.bz2 -P /usr/local
+        tar -xjvf /usr/local/busybox-1.31.0.tar.bz2 && cd /usr/local/busybox-1.31.0 && make defconfig && make install
         echo 'export PATH=/usr/local/busybox-1.31.0/_install/bin:$PATH' >>/etc/profile
         source /etc/profile
         command -v busybox >/dev/null 2>&1
@@ -376,8 +391,7 @@ customize_vim() {
     fi
     if [ ! -d '/root/.vim' ]; then
         mkdir -p /root/.vim/autoload
-        cd /root/.vim/autoload
-        wget https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        wget https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim -P /root/.vim/autoload
     fi
     echo -e "${Info} .vimrc修改完成"
 }
@@ -398,11 +412,15 @@ customize_alias() {
 }
 
 customize_zshrc() {
-    sed -i 's/^ZSH_THEME.*$/ZSH_THEME="ys"/g' $zshrc
-    v='plugins=(git zsh-autosuggestions zsh-syntax-highlighting extract vi-mode)'
-    sed -i "s/^plugins.*)$/$v/g" $zshrc
-    source /root/.zshrc
-    echo -e "${Info} 自定义zsh完成"
+    if [ ! -f $zshrc ]; then
+        echo -e "${Error} 未找到 zsh 配置文件"
+    else
+        sed -i 's/^ZSH_THEME.*$/ZSH_THEME="ys"/g' $zshrc
+        v='plugins=(git zsh-autosuggestions zsh-syntax-highlighting extract vi-mode)'
+        sed -i "s/^plugins.*)$/$v/g" $zshrc
+        source /root/.zshrc
+        echo -e "${Info} 自定义zsh完成"
+    fi
 
 }
 
@@ -418,11 +436,11 @@ install_proxychains() {
     if [[ $? -eq 0 ]]; then
         echo -e "${Info} proxychains 已存在"
     else
-        cd /usr/local
-        git clone https://github.com/rofl0r/proxychains-ng.git
-        cd proxychains-ng
+        git clone https://github.com/rofl0r/proxychains-ng.git /usr/local/proxychains-ng
+        cd /usr/local/proxychains-ng
         ./configure --prefix=/usr --sysconfdir=/etc
-        make && make install
+        make
+        make install
         make install-config
         command -v proxychains4 >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
@@ -455,10 +473,9 @@ install_v2ray() {
     if [[ $? -eq 0 ]]; then
         echo -e "${Info} v2ary 已存在"
     else
-        cd /usr/local
-        wget https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh -P /usr/local
-        sh install-release.sh
 
+        wget https://wei-picgo.oss-cn-beijing.aliyuncs.com/install_v2ray.sh -P /usr/local
+        sh /usr/local/install_v2ray.sh
         command -v v2ray >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
             echo -e "${Info} v2ray安装完成，请修改 /usr/local/etc/v2ray/config.json 后使用 systemctl start v2ray"
@@ -491,15 +508,15 @@ install_nvim() {
     if [[ $? -eq 0 ]]; then
         echo -e "${Info} nvim 已存在"
     else
-        yum install -y nvim
+        yum install -y neovim
         command -v pip >/dev/null 2>&1
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -ne 0 ]]; then
             echo -e "${Error} 未找到 pip 命令"
         else
             pip install neovim
         fi
         command -v npm >/dev/null 2>&1
-        if [[ $? -eq 0 ]]; then
+        if [[ $? -ne 0 ]]; then
             echo -e "${Error} 未找到 npm 命令"
         else
             npm install -g neovim
@@ -520,11 +537,7 @@ install_tig() {
     else
         yum install -y ncurses-devel
         wget -P /usr/local https://github.com/jonas/tig/releases/download/tig-2.5.1/tig-2.5.1.tar.gz
-        tar zxvf tig-2.5.1.tar.gz
-        cd tig-2.5.1
-        ./configure
-        make
-        make install
+        tar zxvf /usr/local/tig-2.5.1.tar.gz && cd /usr/local/tig-2.5.1 && make && make install
         command -v tig >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
             echo -e "${Info} tig 安装完成"
@@ -555,15 +568,9 @@ install_python3() {
     if [[ -n $(python -V | awk '{print $2}' | grep '^3.*') ]]; then
         echo -e "${Info} python 已经是3版本"
     else
-        yum install zlib-devel bzip2-devel readline-devel sqlite sqlite-devel openssl-devel xz xz-devel libffi-devel python3-dev
-        cd /usr/local
-        wget http://npm.taobao.org/mirrors/python/3.8.0/Python-3.8.0.tgz
-        tar -xzf Python-3.8.0.tgz
-        mkdir python3
-        cd Python-3.8.0
-        ./configure --prefix=/usr/local/python3
-        make
-        make install
+        yum -y install zlib-devel bzip2-devel readline-devel sqlite sqlite-devel openssl-devel xz xz-devel libffi-devel python3-dev
+        wget http://npm.taobao.org/mirrors/python/3.8.0/Python-3.8.0.tgz -P /usr/local
+        tar -zxvf /usr/local/Python-3.8.0.tgz && cd /usr/local/Python-3.8.0 && mkdir /usr/local/python3 && configure --prefix=/usr/local/python3 && make && make install
         if [ -x '/usr/bin/python' ]; then
             mv /usr/bin/python /usr/bin/python_bak
             echo -e "${Tip} /usr/bin/python 已存在 已重命名为 python_bak"
@@ -612,7 +619,7 @@ echo -e "  初始化脚本
  ———————————— 安装基础命令 
   ${Green_font_prefix}2a.${Font_color_suffix} 安装 git/wget/glances/tmux/lsof/bzip2/gcc/pstree
  ———————————— 安装进阶命令
-  ${Green_font_prefix}3a.${Font_color_suffix} 安装 oh-my-zsh
+  ${Green_font_prefix}3a.${Font_color_suffix} 安装 zsh && oh-my-zsh
   ${Green_font_prefix}3b.${Font_color_suffix} 安装 nvim
   ${Green_font_prefix}3c.${Font_color_suffix} 安装 trash-cli
   ${Green_font_prefix}3d.${Font_color_suffix} 安装 autojump
@@ -646,6 +653,7 @@ case "$num" in
     install_command git wget glances tmux lsof bzip2 gcc pstree
     ;;
 3a)
+    install_zsh
     install_ohMyZshCommand
     ;;
 3b)
@@ -702,3 +710,9 @@ esac
 
 
 ```
+
+## 脚本需要注意问题
+
+> 1、tar 命令解压完后面命令找不到目录 ，怀疑是 未等到 tar 命令结束就执行下边的命令，但是解压完的文件也找不到。不知道真正原因。解决办法：使用 && 保证顺序执行
+>
+> 2、脚本能判断条件的就要判断条件，要保证安装出错，可以恢复

@@ -174,10 +174,11 @@ systemctl disable v2ray # 移除v2ray开机自启
 
 
 ```shell
-git clone https://github.com/rofl0r/proxychains-ng.git
-cd proxychains-ng
+git clone https://github.com/rofl0r/proxychains-ng.git /usr/local/proxychains-ng
+cd /usr/local/proxychains-ng
 ./configure --prefix=/usr --sysconfdir=/etc
-make && make install
+make 
+make install
 make install-config
 ```
 
