@@ -41,6 +41,7 @@ categories:
   - **docker-compose**
   - **v2ray**
   - **proxychains**
+  - **tig**
 - **自定义nvim**
 - **自定义alias**
 - **自定义zsh**
