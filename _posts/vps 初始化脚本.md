@@ -65,6 +65,15 @@ if [[ -x $(command -v 命令) ]];
 ```
 
 > -x 判断文件是否有可执行权限
+>
+> 判断不准确 ，有时候没安装但是会返回一个#，不知道原因
+
+```shell
+command -v 命令 > /dev/null 2>&1
+if [[ $? -eq 0 ]]; 
+```
+
+> 推荐使用这种
 
 ### 判断文件，文件夹是否存在
 
@@ -199,7 +208,8 @@ Tip="${Green_font_prefix}[注意]${Font_color_suffix}"
 Separator_1="——————————————————————————————"
 
 install_nodejs() {
-    if [[ -x $(command -v node) ]]; then
+    command -v node >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
         echo -e "${Info} nodejs 已存在"
     else
         cd /usr/local
@@ -208,7 +218,8 @@ install_nodejs() {
         mv node-v14.9.0-linux-x64 nodejs
         echo 'export PATH=$PATH:/usr/local/nodejs/bin' >>/etc/profile
         source /etc/profile
-        if [[ -x $(command -v node) ]]; then
+        command -v node >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
             echo -e "${Info} nodejs 安装成功"
         else
             echo -e "${Error} nodejs 安装失败"
@@ -216,11 +227,13 @@ install_nodejs() {
     fi
 }
 install_jdk() {
-    if [[ -x $(command -v java) ]]; then
+    command -v java >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
         echo -e "${Info} jdk 已存在"
     else
         yum install java-1.8.0-openjdk -y
-        if [[ $(command -v java) ]]; then
+        command -v java >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
             echo -e "${Info} jdk 安装成功"
         else
             echo -e "${Error} jdk 安装失败"
@@ -229,14 +242,16 @@ install_jdk() {
 }
 
 install_trashCli() {
-    if [[ -x $(command -v trash-put) ]]; then
+    command -v trash-put >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
         echo -e "${Info} trash-cli 已存在"
     else
         cd /usr/local
         git clone https://github.com/andreafrancia/trash-cli.git
         cd trash-cli
         python setup.py install
-        if [[ -x $(command -v trash-put) ]]; then
+        command -v trash-put >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
             echo -e "${Info} trash-cli 安装成功"
         else
             echo -e "${Error} trash-cli 安装失败"
@@ -245,7 +260,8 @@ install_trashCli() {
 }
 
 install_autojump() {
-    if [[ -x $(command -v autojump) ]]; then
+    command -v autojump >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
         echo -e "${Info} autojump 已存在"
     else
         cd /usr/local
@@ -253,7 +269,8 @@ install_autojump() {
         cd autojump
         ./install.py
         echo '[[ -s ~/.autojump/etc/profile.d/autojump.sh ]] && . ~/.autojump/etc/profile.d/autojump.sh' >>$zshrc
-        if [[ -x $(command -v autojump) ]]; then
+        command -v autojump >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
             echo -e "${Info} autojump 安装成功"
         else
             echo -e "${Error} autojump 安装失败"
@@ -284,11 +301,13 @@ install_ohMyZshCommand() {
 install_command() {
 
     for i; do
-        if [[ -x $(command -v $i) ]]; then
+        command -v $i >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
             echo -e "${Info} $i 已存在"
         else
             yum install -y $i
-            if [[ -x $(command -v $i) ]]; then
+            command -v $i >/dev/null 2>&1
+            if [[ $? -eq 0 ]]; then
                 echo -e "${Info} $i 安装成功"
             else
                 echo -e "${Info} $i 安装失败"
@@ -297,8 +316,28 @@ install_command() {
     done
 
 }
+
+install_nginx() {
+
+    for i; do
+        command -v nginx >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
+            echo -e "${Info} $i 已存在"
+        else
+            yum install -y nginx
+            command -v $i >/dev/null 2>&1
+            if [[ $? -eq 0 ]]; then
+                echo -e "${Info} nginx 安装成功"
+            else
+                echo -e "${Info} nginx 安装失败"
+            fi
+        fi
+    done
+
+}
 install_busybox() {
-    if [[ -x $(command -v busybox) ]]; then
+    command -v busybox >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
         echo -e "${Info} busybox 已存在"
     else
         cd /usr/local
@@ -309,7 +348,8 @@ install_busybox() {
         make install
         echo 'export PATH=/usr/local/busybox-1.31.0/_install/bin:$PATH' >>/etc/profile
         source /etc/profile
-        if [[ -x $(command -v busybox) ]]; then
+        command -v busybox >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
             echo -e "${Info} busybox 安装成功"
         else
             echo -e "${Error} busybox 安装失败"
@@ -374,7 +414,8 @@ set_localtime() {
 
 install_proxychains() {
 
-    if [[ -x $(command -v proxychains) ]]; then
+    command -v proxychains4 >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
         echo -e "${Info} proxychains 已存在"
     else
         cd /usr/local
@@ -383,7 +424,8 @@ install_proxychains() {
         ./configure --prefix=/usr --sysconfdir=/etc
         make && make install
         make install-config
-        if [[ -x $(command -v proxychains) ]]; then
+        command -v proxychains4 >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
             echo -e "${Info} proxychains安装完成，请修改 /etc/proxychains.conf "
 
         else
@@ -394,11 +436,13 @@ install_proxychains() {
 }
 
 install_pstree() {
-    if [[ -x $(command -v pstree) ]]; then
+    command -v pstree >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
         echo -e "${Info} pstree 已存在"
     else
         yum install -y psmisc
-        if [[ -x $(command -v pstree) ]]; then
+        command -v pstree >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
             echo -e "${Info} pstree 安装成功"
         else
             echo -e "${Info} pstree 安装失败"
@@ -406,21 +450,35 @@ install_pstree() {
     fi
 }
 install_v2ray() {
-    cd /usr/local
-    curl -O https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh
-    bash install-release.sh
-    systemctl start v2ray
-    echo -e "${Info} v2ray安装完成，请修改 /usr/local/etc/v2ray/config.json 后使用 systemctl start v2ray"
+
+    command -v v2ary >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
+        echo -e "${Info} v2ary 已存在"
+    else
+        cd /usr/local
+        wget https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh -P /usr/local
+        sh install-release.sh
+
+        command -v v2ray >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
+            echo -e "${Info} v2ray安装完成，请修改 /usr/local/etc/v2ray/config.json 后使用 systemctl start v2ray"
+        else
+            echo -e "${Info} v2ray 安装失败"
+        fi
+    fi
+
 }
 
-install_dcoker() {
-    if [[ -x $(command -v docker) ]]; then
+install_docker() {
+    command -v docker >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
         echo -e "${Info} docker 已存在"
     else
         yum install -y yum-utils device-mapper-persistent-data lvm2
         yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
         yum install docker-ce
-        if [[ -x $(command -v docker) ]]; then
+        command -v docker >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
             echo -e "${Info} docker 安装完成"
         else
             echo -e "${Info} docker 安装失败"
@@ -429,21 +487,25 @@ install_dcoker() {
 }
 
 install_nvim() {
-    if [[ -x $(command -v nvim) ]]; then
+    command -v nvim >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
         echo -e "${Info} nvim 已存在"
     else
         yum install -y nvim
-        if [[ ! -x $(command -v pip) ]]; then
+        command -v pip >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
             echo -e "${Error} 未找到 pip 命令"
         else
             pip install neovim
         fi
-        if [[ ! -x $(command -v npm) ]]; then
+        command -v npm >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
             echo -e "${Error} 未找到 npm 命令"
         else
             npm install -g neovim
         fi
-        if [[ -x $(command -v nvim) ]]; then
+        command -v nvim >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
             echo -e "${Info} nvim 安装完成"
         else
             echo -e "${Info} nvim 安装失败"
@@ -451,9 +513,9 @@ install_nvim() {
     fi
 }
 
-
 install_tig() {
-    if [[ -x $(command -v tig) ]]; then
+    command -v tig >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
         echo -e "${Info} tig 已存在"
     else
         yum install -y ncurses-devel
@@ -463,7 +525,8 @@ install_tig() {
         ./configure
         make
         make install
-        if [[ -x $(command -v tig) ]]; then
+        command -v tig >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
             echo -e "${Info} tig 安装完成"
         else
             echo -e "${Info} tig 安装失败"
@@ -472,7 +535,8 @@ install_tig() {
 }
 
 customize_nvim() {
-    if [[ ! -x $(command -v nvim) ]]; then
+    command -v nvim >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
         echo -e "${Error} 未找到 nvim "
     else
 
@@ -523,24 +587,21 @@ install_python3() {
 
 }
 
-
-install_dcoker_compose() {
-    if [[ -x $(command -v dcoker-compose) ]]; then
+install_docker_compose() {
+    command -v docker-compose >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
         echo -e "${Info} dcoker-compose 已存在"
     else
         curl -L https://github.com/docker/compose/releases/download/1.27.2/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose
 
         chmod u+x /usr/local/bin/docker-compose
-        if [[ -x $(command -v dcoker-compose) ]]; then
+        command -v docker-compose >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
             echo -e "${Info} dcoker-compose 安装完成"
         else
             echo -e "${Info} dcoker-compose 安装失败"
         fi
     fi
-}
-
-all() {
-    echo aa
 }
 
 echo -e "  初始化脚本
@@ -582,7 +643,7 @@ case "$num" in
     install_nodejs
     ;;
 2a)
-    install_command git wget glances tmux lsof bzpi2 gcc pstree
+    install_command git wget glances tmux lsof bzip2 gcc pstree
     ;;
 3a)
     install_ohMyZshCommand
@@ -614,7 +675,7 @@ case "$num" in
 3j)
     install_v2ray
     ;;
-    3k)
+3k)
     install_tig
     ;;
 
@@ -638,5 +699,6 @@ case "$num" in
     echo -e "${Error} 请输入正确的符号"
     ;;
 esac
+
 
 ```
