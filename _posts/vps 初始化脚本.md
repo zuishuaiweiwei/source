@@ -24,7 +24,7 @@ categories:
 - **安装基础命令**
   - **git**
   - **wget**
-  - **htop**
+  - **glances**
   - **tmux**
   - **lsof**
   - **bzip2**
@@ -189,10 +189,8 @@ for file in `cat /usr/local/xx.xx`;
 
 ```shell
 #!/bin/bash
-res='/root/res'
 zshrc='/root/.zshrc'
 vimrc='/root/.vimrc'
-echo '' >$res
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
 Info="${Green_font_prefix}[信息]${Font_color_suffix}"
 Error="${Red_font_prefix}[错误]${Font_color_suffix}"
@@ -300,7 +298,7 @@ install_command() {
 }
 install_busybox() {
     if [[ -x $(command -v busybox) ]]; then
-        echo -e "${Info} busybox 已存在" >>$res
+        echo -e "${Info} busybox 已存在"
     else
         cd /usr/local
         wget https://busybox.net/downloads/busybox-1.31.0.tar.bz2
@@ -317,11 +315,7 @@ install_busybox() {
         fi
     fi
 }
-open_firewallPort() {
-    firewall-cmd --zone=public --add-port=4000/tcp --permanent
-    firewall-cmd --zone=public --add-port=443/tcp --permanent
 
-}
 set_selinux() {
     cp /etc/selinux/config /etc/selinux/config.bak
     echo 'SELINUX=disabled' >/etc/selinux/config
@@ -330,7 +324,7 @@ set_selinux() {
     echo -e "${Info} selinux 已关闭"
 
 }
-set_vim() {
+customize_vim() {
     if [ -f '/root/.vimrc' ]; then
 
         wget https://wei-picgo.oss-cn-beijing.aliyuncs.com/.vimrc.simple
@@ -350,13 +344,14 @@ set_vim() {
 customize_alias() {
     echo 'alias rm="Please use <trash-put> command to delete file.";false' >>$zshrc
     echo "alias tp='trash-put'" >>$zshrc
+    echo "alias h='history'" >>$zshrc
     echo "alias tl='trash-list'" >>$zshrc
     echo "alias tr='trash-restore'" >>$zshrc
     echo "alias vi='vim'" >>$zshrc
     echo "alias src='source /etc/profile'" >>$zshrc
     echo "alias srcc='source $zshrc'" >>$zshrc
     echo "alias pp='pstree -p'" >>$zshrc
-    echo "alias top='htop'" >>$zshrc
+    echo "alias top='glances'" >>$zshrc
     source $zshrc
     echo -e "${Info} 设置 alias 完成"
 }
@@ -372,7 +367,7 @@ customize_zshrc() {
 
 set_localtime() {
     timedatectl set-timezone Asia/Shanghai
-    echo -e "${Info} 设置时区为上海"
+    echo -e "${Info} 设置时区完成"
 
 }
 
@@ -455,6 +450,26 @@ install_nvim() {
     fi
 }
 
+
+install_tig() {
+    if [[ -x $(command -v tig) ]]; then
+        echo -e "${Info} tig 已存在"
+    else
+        yum install -y ncurses-devel
+        wget -P /usr/local https://github.com/jonas/tig/releases/download/tig-2.5.1/tig-2.5.1.tar.gz
+        tar zxvf tig-2.5.1.tar.gz
+        cd tig-2.5.1
+        ./configure
+        make
+        make install
+        if [[ -x $(command -v tig) ]]; then
+            echo -e "${Info} tig 安装完成"
+        else
+            echo -e "${Info} tig 安装失败"
+        fi
+    fi
+}
+
 customize_nvim() {
     if [[ ! -x $(command -v nvim) ]]; then
         echo -e "${Error} 未找到 nvim "
@@ -462,7 +477,7 @@ customize_nvim() {
 
         if [ -d '/root/.config/nvim' ]; then
             mv /root/.config/nvim /root/.config/nvim_bak
-            echo -e "${Tip} /root/.config/nvim 目录已存在 已重命名为nvim_bak"
+            echo -e "${Tip} /root/.config/nvim 目录已存在 已重命名为 nvim_bak"
         fi
         mkdir -p /root/.config/nvim/autoload
         wget https://wei-picgo.oss-cn-beijing.aliyuncs.com/init.vim -O /root/.config/nvim
@@ -484,21 +499,29 @@ install_python3() {
         ./configure --prefix=/usr/local/python3
         make
         make install
-
-        mv /usr/bin/python /usr/bin/python_bak
-        mv /usr/bin/pip /usr/bin/pip_bak
-
+        if [ -x '/usr/bin/python' ]; then
+            mv /usr/bin/python /usr/bin/python_bak
+            echo -e "${Tip} /usr/bin/python 已存在 已重命名为 python_bak"
+        fi
+        if [ -x '/usr/bin/pip' ]; then
+            mv /usr/bin/pip /usr/bin/pip_bak
+            echo -e "${Tip} /usr/bin/pip 已存在 已重命名为 pip_bak"
+        fi
         #sed  '1c#!\/usr\/bin\/python_bak'  /usr/bin/yum
         #sed  '1c#!\/usr\/bin\/python_bak'  /usr/libexec/urlgrabber-ext-down
-
         ln -s /usr/local/python3/bin/python3 /usr/bin/python
         ln -s /usr/local/python3/bin/pip3 /usr/bin/pip
-        echo -e -n "${Info} python3 安装完成"
-        echo -e -n "${Info} 请修改 /usr/bin/yum /usr/libexec/urlgrabber-ext-down "
+        if [[ -n $(python -V | awk '{print $2}' | grep '^3.*') ]]; then
+            echo -e "${Info} python3 安装完成"
+            echo -e -n "${Info} 请修改 /usr/bin/yum   /usr/libexec/urlgrabber-ext-down "
+        else
+            echo -e "${Error} python3 安装失败"
+        fi
 
     fi
 
 }
+
 
 install_dcoker_compose() {
     if [[ -x $(command -v dcoker-compose) ]]; then
@@ -525,7 +548,7 @@ echo -e "  初始化脚本
   ${Green_font_prefix}1b.${Font_color_suffix} 安装 python3
   ${Green_font_prefix}1c.${Font_color_suffix} 安装 nodejs
  ———————————— 安装基础命令 
-  ${Green_font_prefix}2a.${Font_color_suffix} 安装 git/wget/htop/tmux/lsof/bzip2/gcc/pstree
+  ${Green_font_prefix}2a.${Font_color_suffix} 安装 git/wget/glances/tmux/lsof/bzip2/gcc/pstree
  ———————————— 安装进阶命令
   ${Green_font_prefix}3a.${Font_color_suffix} 安装 oh-my-zsh
   ${Green_font_prefix}3b.${Font_color_suffix} 安装 nvim
@@ -537,6 +560,7 @@ echo -e "  初始化脚本
   ${Green_font_prefix}3h.${Font_color_suffix} 安装 docker-compose
   ${Green_font_prefix}3i.${Font_color_suffix} 安装 proxychains
   ${Green_font_prefix}3j.${Font_color_suffix} 安装 v2ary
+  ${Green_font_prefix}3k.${Font_color_suffix} 安装 tig
 ———————————— 自定义
  ${Green_font_prefix}4a.${Font_color_suffix} 自定义 nvim
  ${Green_font_prefix}4b.${Font_color_suffix} 自定义 alias
@@ -545,7 +569,7 @@ echo -e "  初始化脚本
  ${Green_font_prefix}5a.${Font_color_suffix} 关闭 selinux
  ${Green_font_prefix}5b.${Font_color_suffix} 设置 上海时区
  "
-echo && read -p "请输入符合 ：" num
+echo && read -p "请输入对应的符号 " num
 case "$num" in
 1a)
     install_jdk
@@ -557,7 +581,7 @@ case "$num" in
     install_nodejs
     ;;
 2a)
-    install_command git wget htop tmux lsof bzpi2 gcc pstree
+    install_command git wget glances tmux lsof bzpi2 gcc pstree
     ;;
 3a)
     install_ohMyZshCommand
@@ -588,6 +612,9 @@ case "$num" in
     ;;
 3j)
     install_v2ray
+    ;;
+    3k)
+    install_tig
     ;;
 
 4a)
