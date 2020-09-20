@@ -42,6 +42,7 @@ categories:
   - **v2ray**
   - **proxychains**
   - **tig**
+  - **ranger**
 - **自定义nvim**
 - **自定义alias**
 - **自定义zsh**
@@ -577,21 +578,22 @@ install_python3() {
         yum -y install zlib-devel bzip2-devel readline-devel sqlite sqlite-devel openssl-devel xz xz-devel libffi-devel python3-dev
         wget http://npm.taobao.org/mirrors/python/3.8.0/Python-3.8.0.tgz -P /usr/local
         tar -zxvf /usr/local/Python-3.8.0.tgz && cd /usr/local/Python-3.8.0 && mkdir /usr/local/python3 && configure --prefix=/usr/local/python3 && make && make install
-        if [ -x '/usr/bin/python' ]; then
-            mv /usr/bin/python /usr/bin/python_bak
-            echo -e "${Tip} /usr/bin/python 已存在 已重命名为 python_bak"
-        fi
-        if [ -x '/usr/bin/pip' ]; then
-            mv /usr/bin/pip /usr/bin/pip_bak
-            echo -e "${Tip} /usr/bin/pip 已存在 已重命名为 pip_bak"
-        fi
+        # if [ -x '/usr/bin/python' ]; then
+        #     mv /usr/bin/python /usr/bin/python_bak
+        #     echo -e "${Tip} /usr/bin/python 已存在 已重命名为 python_bak"
+        # fi
+        # if [ -x '/usr/bin/pip' ]; then
+        #     mv /usr/bin/pip /usr/bin/pip_bak
+        #     echo -e "${Tip} /usr/bin/pip 已存在 已重命名为 pip_bak"
+        # fi
         #sed  '1c#!\/usr\/bin\/python_bak'  /usr/bin/yum
         #sed  '1c#!\/usr\/bin\/python_bak'  /usr/libexec/urlgrabber-ext-down
-        ln -s /usr/local/python3/bin/python3 /usr/bin/python
-        ln -s /usr/local/python3/bin/pip3 /usr/bin/pip
+        ln -s /usr/local/python3/bin/python3 /usr/bin/python3
+        ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3
         if [[ -n $(python -V | awk '{print $2}' | grep '^3.*') ]]; then
+        pip install --upgrade pip
             echo -e "${Info} python3 安装完成"
-            echo -e -n "${Info} 请修改 /usr/bin/yum   /usr/libexec/urlgrabber-ext-down "
+            # echo -e -n "${Info} 请修改 /usr/bin/yum   /usr/libexec/urlgrabber-ext-down "
         else
             echo -e "${Error} python3 安装失败"
         fi
@@ -617,6 +619,26 @@ install_docker_compose() {
     fi
 }
 
+install_ranger() {
+    command -v ranger >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
+        echo -e "${Info} ranger 已存在"
+    else
+        pip install ranger-fm
+
+        command -v ranger >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
+            echo -e "${Info} ranger 安装完成"
+        else
+            echo -e "${Info} ranger 安装失败"
+        fi
+    fi
+}
+
+set_editor() {
+    echo "export EDITOR='/usr/bin/nvim'" >>$zshrc
+}
+
 echo -e "  初始化脚本
 ——————————— 安装环境
   ${Green_font_prefix}1a.${Font_color_suffix} 安装 jdk
@@ -636,12 +658,14 @@ echo -e "  初始化脚本
   ${Green_font_prefix}3i.${Font_color_suffix} 安装 proxychains
   ${Green_font_prefix}3j.${Font_color_suffix} 安装 v2ary
   ${Green_font_prefix}3k.${Font_color_suffix} 安装 tig
+  ${Green_font_prefix}3l.${Font_color_suffix} 安装 ranger
 ———————————— 自定义
  ${Green_font_prefix}4a.${Font_color_suffix} 自定义 nvim
  ${Green_font_prefix}4b.${Font_color_suffix} 自定义 自定义zsh
 ———————————— 其他
  ${Green_font_prefix}5a.${Font_color_suffix} 关闭 selinux
  ${Green_font_prefix}5b.${Font_color_suffix} 设置 上海时区
+ ${Green_font_prefix}5c.${Font_color_suffix} 设置 默认文本编辑器
  "
 echo && read -p "请输入对应的符号 " num
 case "$num" in
@@ -703,6 +727,9 @@ case "$num" in
     ;;
 5b)
     set_localtime
+    ;;
+5c)
+    set_editor
     ;;
 *)
     echo -e "${Error} 请输入正确的符号"
