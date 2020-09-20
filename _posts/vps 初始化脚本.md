@@ -244,7 +244,7 @@ install_trashCli() {
         echo -e "${Info} trash-cli 已存在"
     else
         git clone https://github.com/andreafrancia/trash-cli.git /usr/local/trash-cli
-        python /usr/local/trash-cli/setup.py install
+        && cd /usr/local/trash-cli && python setup.py install
         command -v trash-put >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
             echo -e "${Info} trash-cli 安装成功"
@@ -273,27 +273,23 @@ install_autojump() {
 }
 
 install_ohMyZshCommand() {
+    command -v zsh > /dev/null 2>&1
     if [[ $? -ne 0 ]]; then
         echo -e "${Info} zsh未安装"
         exit 1
     fi
     if [[ ! -f $zshrc ]]; then
-        echo -e "${Info} zsh 配置文件 未找到"
-        exit 1
+    mv /root/.zshrc /root/.zshrc_bak
+        echo -e "${Info} zsh 配置文件已存在 重命名为 .zshrc_bak"
     fi
     command -v zsh > /dev/null 2>&1
 
     if [[ -d '/root/.oh-my-zsh' ]]; then
         echo -e "${Info} oh-my-zsh 已存在"
     else
-        ZSH_CUSTOM='/root/.oh-my-zsh/custom'
-        wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O - | sh
-        chsh -s /bin/zsh root
-        git clone https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions
-        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-highlighting
-        echo 'export ZSH="/root/.oh-my-zsh"' >>$zshrc
-        echo 'source $ZSH/oh-my-zsh.sh' >>$zshrc
-        echo 'source "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"' >>$zshrc
+        
+        wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O - | sh 
+         
         if [[ -d '/root/.oh-my-zsh' ]]; then
             echo -e "${Info} oh-my-zsh 安装成功"
         else
@@ -309,7 +305,7 @@ install_zsh() {
         yum -y install zsh
         command -v zsh
         if [[ $? -eq 0 ]]; then
-            echo -e "${Info} zsh 安装成功"
+            echo -e "${Info} zsh 安装成功  chsh -s /bin/zsh root"
         else
             echo -e "${Error} zsh 安装失败"
         fi
@@ -414,14 +410,25 @@ customize_alias() {
 customize_zshrc() {
     if [ ! -f $zshrc ]; then
         echo -e "${Error} 未找到 zsh 配置文件"
-    else
-        sed -i 's/^ZSH_THEME.*$/ZSH_THEME="ys"/g' $zshrc
-        v='plugins=(git zsh-autosuggestions zsh-syntax-highlighting extract vi-mode)'
-        sed -i "s/^plugins.*)$/$v/g" $zshrc
-        source /root/.zshrc
-        echo -e "${Info} 自定义zsh完成"
+        exit 1
     fi
-
+        mv /root/.zshrc /root/.zshrc_bak
+       if [ $? -ne 0 ]; then
+        echo -e "${Error}  备份.zshrc 失败"
+        exit 1
+        fi
+    if [[ ! -d '/root/.oh-my-zsh' ]]; then
+        echo -e "${Error} oh-my-zsh 未安装"
+        exit 1
+    fi
+    wget https://wei-picgo.oss-cn-beijing.aliyuncs.com/.zshrc -P /root
+        if [[ ! -d "/root/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]]; then
+           git clone https://github.com/zsh-users/zsh-autosuggestions /root/.oh-my-zsh/custom/plugins/zsh-autosuggestions 
+    fi
+            if [[ ! -d "/root/.oh-my-zsh/custom/plugins/zsh-highlighting" ]]; then
+           git clone https://github.com/zsh-users/zsh-autosuggestions /root/.oh-my-zsh/custom/plugins/zsh-highlighting 
+           && echo 'source "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"' >>$zshrc
+    fi
 }
 
 set_localtime() {
@@ -552,14 +559,13 @@ customize_nvim() {
     if [[ $? -eq 0 ]]; then
         echo -e "${Error} 未找到 nvim "
     else
-
         if [ -d '/root/.config/nvim' ]; then
             mv /root/.config/nvim /root/.config/nvim_bak
             echo -e "${Tip} /root/.config/nvim 目录已存在 已重命名为 nvim_bak"
         fi
         mkdir -p /root/.config/nvim/autoload
         wget https://wei-picgo.oss-cn-beijing.aliyuncs.com/init.vim -O /root/.config/nvim
-        wget -P /root/.config/nvim/autoload https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        wget -P /root/.config/nvim/autoload https://wei-picgo.oss-cn-beijing.aliyuncs.com/plug.vim
     fi
 }
 
@@ -632,8 +638,7 @@ echo -e "  初始化脚本
   ${Green_font_prefix}3k.${Font_color_suffix} 安装 tig
 ———————————— 自定义
  ${Green_font_prefix}4a.${Font_color_suffix} 自定义 nvim
- ${Green_font_prefix}4b.${Font_color_suffix} 自定义 alias
- ${Green_font_prefix}4c.${Font_color_suffix} 设置 自定义zsh
+ ${Green_font_prefix}4b.${Font_color_suffix} 自定义 自定义zsh
 ———————————— 其他
  ${Green_font_prefix}5a.${Font_color_suffix} 关闭 selinux
  ${Green_font_prefix}5b.${Font_color_suffix} 设置 上海时区
@@ -691,12 +696,8 @@ case "$num" in
     customize_nvim
     ;;
 4b)
-    customize_alias
-    ;;
-4c)
     customize_zshrc
     ;;
-
 5a)
     set_selinux
     ;;
@@ -713,6 +714,6 @@ esac
 
 ## 脚本需要注意问题
 
-> 1、tar 命令解压完后面命令找不到目录 ，怀疑是 未等到 tar 命令结束就执行下边的命令，但是解压完的文件也找不到。不知道真正原因。解决办法：使用 && 保证顺序执行
+> 1、脚本中对于路径切换 `cd` 比较消耗性能，最好是命令指定目录执行
 >
 > 2、脚本能判断条件的就要判断条件，要保证安装出错，可以恢复
