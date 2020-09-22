@@ -36,5 +36,3 @@ sed -i 's/updates.jenkins-ci.org\/download/mirrors.tuna.tsinghua.edu.cn\/jenkins
 > 去掉 `url` 中的 `jenkins`
 >
 > 插件安装失败，重启试试
-
-### 访问容器外路径报错
