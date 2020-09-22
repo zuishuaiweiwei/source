@@ -21,3 +21,5 @@ categories:
 ### git plug
 
 ## 构建 github 项目
+
+## 执行脚本
