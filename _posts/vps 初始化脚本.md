@@ -45,6 +45,7 @@ categories:
   - **ranger**
   - **dnf**
   - **lazygit**
+  - **jenkins**
 - **自定义nvim**
 - **自定义alias**
 - **自定义zsh**
@@ -637,6 +638,30 @@ install_ranger() {
     fi
 }
 
+install_jenkins() {
+       command -v java >/dev/null 2>&1
+    if [[ $? -ne 0 ]]; then
+        echo -e "${Error} java 不存在"
+        exit 1
+    fi
+    v_name="jenkins"
+    command -v $v_name >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
+        echo -e "${Info} $v_name 已存在"
+    else
+    wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+    rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+    yum install jenkins -y
+        command -v $v_name >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
+            echo -e "${Info} $v_name 安装完成"
+
+        else
+            echo -e "${Info} $v_name 安装失败"
+        fi
+    fi
+}
+
 install_lazygit() {
     v_name="lazygit"
     command -v $v_name >/dev/null 2>&1
@@ -681,6 +706,7 @@ echo -e "  初始化脚本
   ${Green_font_prefix}3k.${Font_color_suffix} 安装 tig
   ${Green_font_prefix}3l.${Font_color_suffix} 安装 ranger
   ${Green_font_prefix}3m.${Font_color_suffix} 安装 lazygit
+  ${Green_font_prefix}3n.${Font_color_suffix} 安装 jenkins
 ———————————— 自定义
  ${Green_font_prefix}4a.${Font_color_suffix} 自定义 nvim
  ${Green_font_prefix}4b.${Font_color_suffix} 自定义 自定义zsh
@@ -742,6 +768,9 @@ case "$num" in
     ;;
         3m)
     install_lazygit
+    ;;
+            3n)
+    install_jenkins
     ;;
 
 4a)
