@@ -11,10 +11,10 @@ categories:
 
 ## docker run
 
-> 直接 `run`，默认 `latest` 版本
+> 直接使用 `docker search jenkins` 搜索出来官方的不能使用，已经不维护了,插件安装不上
 
 ```
-docker run -d --name jenkins -p 8080:8080 -p 50000:50000 -v /usr/local/jenkins:/var/jenkins_home -u root jenkins
+docker run -d --name jenkins -p 8080:8080 -p 50000:50000 -v /usr/local/jenkins:/var/jenkins_home -u root jenkins/jenkins:lts
 ```
 
 > -v ：配置文件持久化到本地

@@ -43,6 +43,8 @@ categories:
   - **proxychains**
   - **tig**
   - **ranger**
+  - **dnf**
+  - **lazygit**
 - **自定义nvim**
 - **自定义alias**
 - **自定义zsh**
@@ -635,6 +637,25 @@ install_ranger() {
     fi
 }
 
+install_lazygit() {
+    v_name="lazygit"
+    command -v $v_name >/dev/null 2>&1
+
+    if [[ $? -eq 0 ]]; then
+        echo -e "${Info} $v_name 已存在"
+    else
+        dnf install $v_name
+
+        command -v $v_name >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
+            echo -e "${Info} $v_name 安装完成"
+
+        else
+            echo -e "${Info} $v_name 安装失败"
+        fi
+    fi
+}
+
 set_editor() {
     echo "export EDITOR='/usr/bin/nvim'" >>$zshrc
 }
@@ -645,7 +666,7 @@ echo -e "  初始化脚本
   ${Green_font_prefix}1b.${Font_color_suffix} 安装 python3
   ${Green_font_prefix}1c.${Font_color_suffix} 安装 nodejs
  ———————————— 安装基础命令 
-  ${Green_font_prefix}2a.${Font_color_suffix} 安装 git/wget/glances/tmux/lsof/bzip2/gcc/pstree
+  ${Green_font_prefix}2a.${Font_color_suffix} 安装 git/wget/glances/tmux/lsof/bzip2/gcc/pstree/dnf
  ———————————— 安装进阶命令
   ${Green_font_prefix}3a.${Font_color_suffix} 安装 zsh && oh-my-zsh
   ${Green_font_prefix}3b.${Font_color_suffix} 安装 nvim
@@ -659,6 +680,7 @@ echo -e "  初始化脚本
   ${Green_font_prefix}3j.${Font_color_suffix} 安装 v2ary
   ${Green_font_prefix}3k.${Font_color_suffix} 安装 tig
   ${Green_font_prefix}3l.${Font_color_suffix} 安装 ranger
+  ${Green_font_prefix}3m.${Font_color_suffix} 安装 lazygit
 ———————————— 自定义
  ${Green_font_prefix}4a.${Font_color_suffix} 自定义 nvim
  ${Green_font_prefix}4b.${Font_color_suffix} 自定义 自定义zsh
@@ -679,7 +701,7 @@ case "$num" in
     install_nodejs
     ;;
 2a)
-    install_command git wget glances tmux lsof bzip2 gcc pstree
+    install_command git wget glances tmux lsof bzip2 gcc pstree dnf dnf-plugins-core
     ;;
 3a)
     install_zsh
@@ -714,6 +736,12 @@ case "$num" in
     ;;
 3k)
     install_tig
+    ;;
+    3l)
+    install_ranger
+    ;;
+        3m)
+    install_lazygit
     ;;
 
 4a)
