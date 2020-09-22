@@ -26,3 +26,6 @@ categories:
 
 ## 执行脚本
 
+docker 里的 jenkins 不能执行宿主机脚本
+
+
