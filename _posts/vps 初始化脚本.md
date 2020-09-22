@@ -291,9 +291,7 @@ install_ohMyZshCommand() {
     if [[ -d '/root/.oh-my-zsh' ]]; then
         echo -e "${Info} oh-my-zsh 已存在"
     else
-        
         wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O - | sh 
-         
         if [[ -d '/root/.oh-my-zsh' ]]; then
             echo -e "${Info} oh-my-zsh 安装成功"
         else
@@ -652,6 +650,7 @@ install_jenkins() {
     wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo &&
     rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key &&
     yum install jenkins -y
+
         command -v $v_name >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
             echo -e "${Info} $v_name 安装完成"
