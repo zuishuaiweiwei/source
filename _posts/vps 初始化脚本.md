@@ -649,8 +649,8 @@ install_jenkins() {
     if [[ $? -eq 0 ]]; then
         echo -e "${Info} $v_name 已存在"
     else
-    wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
-    rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+    wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo &&
+    rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key &&
     yum install jenkins -y
         command -v $v_name >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
