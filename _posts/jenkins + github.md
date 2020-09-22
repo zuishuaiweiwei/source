@@ -16,4 +16,8 @@ categories:
 
 本地 `push` ，`jenkins` 可以触发构建，在 `vps` 中执行脚本
 
+## 安装插件
+
+### git plug
+
 ## 构建 github 项目
