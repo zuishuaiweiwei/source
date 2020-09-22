@@ -247,8 +247,8 @@ install_trashCli() {
     if [[ $? -eq 0 ]]; then
         echo -e "${Info} trash-cli 已存在"
     else
-        git clone https://github.com/andreafrancia/trash-cli.git /usr/local/trash-cli
-        && cd /usr/local/trash-cli && python setup.py install
+        git clone https://github.com/andreafrancia/trash-cli.git /usr/local/trash-cli && cd /usr/local/trash-cli && python setup.py install
+
         command -v trash-put >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
             echo -e "${Info} trash-cli 安装成功"
@@ -277,21 +277,23 @@ install_autojump() {
 }
 
 install_ohMyZshCommand() {
-    command -v zsh > /dev/null 2>&1
+    command -v zsh >/dev/null 2>&1
     if [[ $? -ne 0 ]]; then
         echo -e "${Info} zsh未安装"
         exit 1
     fi
     if [[ ! -f $zshrc ]]; then
-    mv /root/.zshrc /root/.zshrc_bak
+        mv /root/.zshrc /root/.zshrc_bak
         echo -e "${Info} zsh 配置文件已存在 重命名为 .zshrc_bak"
     fi
-    command -v zsh > /dev/null 2>&1
+    command -v zsh >/dev/null 2>&1
 
     if [[ -d '/root/.oh-my-zsh' ]]; then
         echo -e "${Info} oh-my-zsh 已存在"
     else
-        wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O - | sh 
+
+        wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O - | sh
+
         if [[ -d '/root/.oh-my-zsh' ]]; then
             echo -e "${Info} oh-my-zsh 安装成功"
         else
@@ -414,22 +416,21 @@ customize_zshrc() {
         echo -e "${Error} 未找到 zsh 配置文件"
         exit 1
     fi
-        mv /root/.zshrc /root/.zshrc_bak
-       if [ $? -ne 0 ]; then
+    mv /root/.zshrc /root/.zshrc_bak
+    if [ $? -ne 0 ]; then
         echo -e "${Error}  备份.zshrc 失败"
         exit 1
-        fi
+    fi
     if [[ ! -d '/root/.oh-my-zsh' ]]; then
         echo -e "${Error} oh-my-zsh 未安装"
         exit 1
     fi
     wget https://wei-picgo.oss-cn-beijing.aliyuncs.com/.zshrc -P /root
-        if [[ ! -d "/root/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]]; then
-           git clone https://github.com/zsh-users/zsh-autosuggestions /root/.oh-my-zsh/custom/plugins/zsh-autosuggestions 
+    if [[ ! -d "/root/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]]; then
+        git clone https://github.com/zsh-users/zsh-autosuggestions /root/.oh-my-zsh/custom/plugins/zsh-autosuggestions
     fi
-            if [[ ! -d "/root/.oh-my-zsh/custom/plugins/zsh-highlighting" ]]; then
-           git clone https://github.com/zsh-users/zsh-autosuggestions /root/.oh-my-zsh/custom/plugins/zsh-highlighting 
-           && echo 'source "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"' >>$zshrc
+    if [[ ! -d "/root/.oh-my-zsh/custom/plugins/zsh-highlighting" ]]; then
+        git clone https://github.com/zsh-users/zsh-autosuggestions /root/.oh-my-zsh/custom/plugins/zsh-highlighting && echo 'source "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"' >>$zshrc
     fi
 }
 
@@ -592,7 +593,7 @@ install_python3() {
         ln -s /usr/local/python3/bin/python3 /usr/bin/python3
         ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3
         if [[ -n $(python -V | awk '{print $2}' | grep '^3.*') ]]; then
-        pip install --upgrade pip
+            pip install --upgrade pip
             echo -e "${Info} python3 安装完成"
             # echo -e -n "${Info} 请修改 /usr/bin/yum   /usr/libexec/urlgrabber-ext-down "
         else
@@ -637,7 +638,7 @@ install_ranger() {
 }
 
 install_jenkins() {
-       command -v java >/dev/null 2>&1
+    command -v java >/dev/null 2>&1
     if [[ $? -ne 0 ]]; then
         echo -e "${Error} java 不存在"
         exit 1
@@ -647,9 +648,9 @@ install_jenkins() {
     if [[ $? -eq 0 ]]; then
         echo -e "${Info} $v_name 已存在"
     else
-    wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo &&
-    rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key &&
-    yum install jenkins -y
+        wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo &&
+            rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key &&
+            yum install jenkins -y
 
         command -v $v_name >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
@@ -762,13 +763,13 @@ case "$num" in
 3k)
     install_tig
     ;;
-    3l)
+3l)
     install_ranger
     ;;
-        3m)
+3m)
     install_lazygit
     ;;
-            3n)
+3n)
     install_jenkins
     ;;
 
