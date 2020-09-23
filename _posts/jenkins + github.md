@@ -10,11 +10,11 @@ categories:
 
 ## 问题
 
-本地写完博客，`push` 到 `github` 后，需要登录 `vps` 执行 脚本拉取代码，`jenkins` 可以代替这个步骤
+本地写完博客，`push` 到 `github` 后，需要登录 `vps` 执行脚本拉取代码，`jenkins` 可以代替这个步骤
 
 ## 目标
 
-本地 `push` ，`jenkins` 可以触发构建，在 `vps` 中执行 hexo 的脚本
+本地 `push` ，`jenkins` 可以触发构建，在 `vps` 中执行 `hexo` 的脚本
 
 ## 构建 github 项目
 
@@ -46,7 +46,7 @@ categories:
 
 ![image-20200923100801424](https://wei-picgo.oss-cn-beijing.aliyuncs.com/img/20200923102207.png)
 
-> `Credentials` 需要填写 `github`  账号密码
+> `Credentials` 需要填写 `github` 账号密码
 
 ![image-20200923100911234](https://wei-picgo.oss-cn-beijing.aliyuncs.com/img/20200923102213.png)
 
