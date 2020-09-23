@@ -18,11 +18,11 @@ categories:
 
 ## 安装插件
 
-### git plug
 
 
 ## 构建 github 项目
 
 ## 执行脚本
+
 docker 里的 jenkins 不能执行宿主机脚本
 
