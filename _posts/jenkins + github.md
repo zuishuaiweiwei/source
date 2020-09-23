@@ -27,3 +27,5 @@ categories:
 
 docker 里的 jenkins 不能执行宿主机脚本
 
+jenkins 有的命令找不到
+
