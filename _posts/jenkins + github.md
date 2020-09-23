@@ -27,5 +27,5 @@ categories:
 
 docker 里的 jenkins 不能执行宿主机脚本
 
-jenkins 有的命令找不到
+jenkins 有的命令找不到，需要在系统设置里边配置环境变量
 
