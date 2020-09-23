@@ -23,11 +23,8 @@ categories:
 > 1、需要安装 `GitHub Plug`插件
 
 > 2、系统管理里配置 `github` 服务器
->
-> ​	
 
 ![image-20200923101522740](https://wei-picgo.oss-cn-beijing.aliyuncs.com/img/20200923102149.png)
-
 
 
 > 注意选择类型，`Secret` 填写的是 `github` 生成的 `Personal access tokens`

@@ -1,3 +1,11 @@
+---
+title: vim 插件
+date: 2020-09-22 10:25:54
+tags: 
+ - vim
+categories: 
+ - 插件
+---
 # vim 插件
 
 ## 准备工作
