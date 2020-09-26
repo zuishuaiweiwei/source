@@ -105,7 +105,7 @@ let g:rainbow_conf = {
 > 自动关闭括号
 
 ```shell
-Plug 'jiangmiao/auto-pairs' 
+Plug 'jiangmiao/auto-pairs'
 ```
 
 ### 	coc.nvim
@@ -122,5 +122,5 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 >
 > 进入 `nvim` 如果报错未找到 `Javascript entry not found` ，执行 `:call coc#util#install()`
 
-> 推荐安装 `Plug 'ervandew/supertab' `  <TAB> 键可以切换选项
+> 推荐安装 `Plug 'ervandew/supertab' `  `<TAB>` 键可以切换选项
 

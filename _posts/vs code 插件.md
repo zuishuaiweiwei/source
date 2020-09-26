@@ -4,7 +4,7 @@ date: 2020-09-09 10:25:54
 tags: 
  - vscode插件
 categories: 
- - 插件
+ - {'插件','vscode'}
 ---
 ## 自用插件
 
