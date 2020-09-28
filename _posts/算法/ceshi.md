@@ -1,5 +1,5 @@
 ---
-title:  [简单] 转置矩阵ces
+title:  转置矩阵ces[简单]
 date: 2020-09-28 10:25:54
 tags: 
  - Array
