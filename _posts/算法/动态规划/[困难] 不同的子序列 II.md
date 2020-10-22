@@ -17,9 +17,10 @@ cover: https://wei-picgo.oss-cn-beijing.aliyuncs.com/img/20201021180824.png
 
 > 假设来到中间位置 i ，以 i 结尾的不同子序列要根据两个条件判断 ，字符是不是第一次出现和 i -1 结尾的不同子序列的个数，如果 i 位置字符是第一次出现，那么 i 位置的不同子序列个数为 i -1 的个数 * 2 + 1，之前的每个不同子序列都能和 i 位置字符组成新的子序列，加 1 是加上新的字符，如果不是第一次出现，那么 i 位置的不同子序列格式为 i - 1 的个数 * 2 减去前一次出现字符前一个位置的不同子序列的个数。
 >
-> 难点 ： dp [ i ] 保存的是 原数组 i  + 1 结尾的个数，减去上次出现位置的前一个在原数组的位置 x 就是减去 dp[x] ，
+> 难点 ：
 >
-> ​		     减去上次出现的位置的前一个位置结果可能为负数，需要加上 mod。
+> 1. dp [ i ] 保存的是 原数组 i  + 1 结尾的个数，减去上次出现位置的前一个在原数组的位置 x 就是减去 dp[x] 
+> 2. 减去上次出现的位置的前一个位置结果可能为负数，需要加上 mod。
 >
 > 步骤：
 >
@@ -47,7 +48,7 @@ cover: https://wei-picgo.oss-cn-beijing.aliyuncs.com/img/20201021180824.png
 
 ```java
 class Solution {
-    public int distinctSubseqII(String strs) {
+    public int distinctSubseqII1(String strs) {
         if(strs.length() < 2){
             return strs.length();
         }
@@ -66,7 +67,17 @@ class Solution {
             x[ch] = i;
         }
         return dp[dp.length -1];
-
+    }
+    
+     // 优化的方法，思想都是一样的，巧妙的利用了数组覆盖的方式减去重复的序列，注意越界问题
+     // 每一次都要求和，效率低
+     public int distinctSubseqII(String strs) {
+        int mod = (int)1e9+7;
+        long[] dp = new long[26];
+        for(char ch : strs.toCharArray()){
+            dp[ch - 'a'] = (Arrays.stream(dp).sum() +1) % mod;
+        }
+        return (int)(Arrays.stream(dp).sum() % mod);
     }
 }
 ```
