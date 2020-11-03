@@ -27,7 +27,7 @@ categories:
 ![image-20200923101522740](https://wei-picgo.oss-cn-beijing.aliyuncs.com/img/20200923102149.png)
 
 
-> 注意选择类型，`Secret` 填写的是 `github` 生成的 `Personal access tokens`
+> 注意选择类型，`Secret` 填写的是 `github` 生成的 `Personal access tokens`，在 `Settings / Developer settings`
 
 ![image-20200923100058293](https://wei-picgo.oss-cn-beijing.aliyuncs.com/img/20200923102157.png)
 
@@ -56,4 +56,15 @@ categories:
 > 执行脚本找不到命令，需要在系统设置里配置环境变量，服务器上查看 `PATH`
 
 ![image-20200923101202641](https://wei-picgo.oss-cn-beijing.aliyuncs.com/img/20200923102225.png)
+
+> 提示 Permission denied
+
+```shell
+vi /etc/sysconfig/jenkins
+JENKINS_USER="root"
+
+cd /var/lib
+chown -R root:root jenkins
+service jenkins restart
+```
 

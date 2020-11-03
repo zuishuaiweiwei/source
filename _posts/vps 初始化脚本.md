@@ -24,7 +24,7 @@ categories:
 - **安装基础命令**
   - **git**
   - **wget**
-  - **glances**
+  - **htop**
   - **tmux**
   - **lsof**
   - **bzip2**
@@ -217,9 +217,10 @@ install_nodejs() {
         echo -e "${Info} nodejs 已存在"
     else
         wget https://nodejs.org/dist/v14.9.0/node-v14.9.0-linux-x64.tar.xz -P /usr/local
-        tar -xvf node-v14.9.0-linux-x64.tar.xz && mv node-v14.9.0-linux-x64 nodejs
-
-        echo 'export PATH=$PATH:/usr/local/nodejs/bin' >>/etc/profile && source /etc/profile && command -v node >/dev/null 2>&1
+        cd /usr/local
+        tar -xvf node-v14.9.0-linux-x64.tar.xz && mv node-v14.9.0-linux-x64 nodejs && echo 'export PATH=$PATH:/usr/local/nodejs/bin' >>/etc/profile && source /etc/profile && command -v node >/dev/null 2>&1
+        # npm install yarn
+        # cd /root/.config/nvim/plugged/coc.nvim &&  /usr/bin/node_modules/yarn/bin/yarn install --frozen-lockfile
         if [[ $? -eq 0 ]]; then
             echo -e "${Info} nodejs 安装成功"
         else
@@ -264,8 +265,7 @@ install_autojump() {
         echo -e "${Info} autojump 已存在"
     else
         git clone git://github.com/joelthelion/autojump.git /usr/local/autojump
-
-        python /usr/local/autojump/install.py
+        ./usr/local/autojump/install.py
         echo '[[ -s ~/.autojump/etc/profile.d/autojump.sh ]] && . ~/.autojump/etc/profile.d/autojump.sh' >>$zshrc
         command -v autojump >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
@@ -328,7 +328,7 @@ install_command() {
             if [[ $? -eq 0 ]]; then
                 echo -e "${Info} $i 安装成功"
             else
-                echo -e "${Info} $i 安装失败"
+                echo -e "${Error} $i 安装失败"
             fi
         fi
     done
@@ -337,21 +337,18 @@ install_command() {
 
 install_nginx() {
 
-    for i; do
         command -v nginx >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
             echo -e "${Info} $i 已存在"
-        else
+            exit 0
+        fi
             yum install -y nginx
             command -v $i >/dev/null 2>&1
             if [[ $? -eq 0 ]]; then
                 echo -e "${Info} nginx 安装成功"
             else
-                echo -e "${Info} nginx 安装失败"
+                echo -e "${Error} nginx 安装失败"
             fi
-        fi
-    done
-
 }
 install_busybox() {
     command -v busybox >/dev/null 2>&1
@@ -405,8 +402,10 @@ customize_alias() {
     echo "alias vi='vim'" >>$zshrc
     echo "alias src='source /etc/profile'" >>$zshrc
     echo "alias srcc='source $zshrc'" >>$zshrc
+    echo "alias vsrcc='vi /root/.zshrc" >>$zshrc
+    echo "alias vsrc='vi /etc/profile" >>$zshrc
     echo "alias pp='pstree -p'" >>$zshrc
-    echo "alias top='glances'" >>$zshrc
+    echo "alias top='htop'" >>$zshrc
     source $zshrc
     echo -e "${Info} 设置 alias 完成"
 }
@@ -427,11 +426,13 @@ customize_zshrc() {
     fi
     wget https://wei-picgo.oss-cn-beijing.aliyuncs.com/.zshrc -P /root
     if [[ ! -d "/root/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]]; then
-        git clone https://github.com/zsh-users/zsh-autosuggestions /root/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+        git clone https://github.com/zsh-users/zsh-autosuggestions.git /root/.oh-my-zsh/custom/plugins/zsh-autosuggestions
     fi
-    if [[ ! -d "/root/.oh-my-zsh/custom/plugins/zsh-highlighting" ]]; then
-        git clone https://github.com/zsh-users/zsh-autosuggestions /root/.oh-my-zsh/custom/plugins/zsh-highlighting && echo 'source "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"' >>$zshrc
+    if [[ ! -d "/root/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]]; then
+        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /root/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting && echo 'source "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"' >>$zshrc
     fi
+    echo -e "${Info} 自定义 zsh 完成"
+
 }
 
 set_localtime() {
@@ -457,7 +458,7 @@ install_proxychains() {
             echo -e "${Info} proxychains安装完成，请修改 /etc/proxychains.conf "
 
         else
-            echo -e "${Info} proxychains 安装失败"
+            echo -e "${Error} proxychains 安装失败"
         fi
     fi
 
@@ -473,7 +474,7 @@ install_pstree() {
         if [[ $? -eq 0 ]]; then
             echo -e "${Info} pstree 安装成功"
         else
-            echo -e "${Info} pstree 安装失败"
+            echo -e "${Error} pstree 安装失败"
         fi
     fi
 }
@@ -483,14 +484,16 @@ install_v2ray() {
     if [[ $? -eq 0 ]]; then
         echo -e "${Info} v2ary 已存在"
     else
-
+        if [ -f '/usr/local/install_v2ray.sh' ]; then
+             rm -f /usr/local/install_v2ray.sh || tp /usr/local/install_v2ray.sh
+        fi
         wget https://wei-picgo.oss-cn-beijing.aliyuncs.com/install_v2ray.sh -P /usr/local
-        sh /usr/local/install_v2ray.sh
+        sh /usr/local/install_v2ray.sh 
         command -v v2ray >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
             echo -e "${Info} v2ray安装完成，请修改 /usr/local/etc/v2ray/config.json 后使用 systemctl start v2ray"
         else
-            echo -e "${Info} v2ray 安装失败"
+            echo -e "${Error} v2ray 安装失败"
         fi
     fi
 
@@ -508,7 +511,7 @@ install_docker() {
         if [[ $? -eq 0 ]]; then
             echo -e "${Info} docker 安装完成"
         else
-            echo -e "${Info} docker 安装失败"
+            echo -e "${Error} docker 安装失败"
         fi
     fi
 }
@@ -518,24 +521,24 @@ install_nvim() {
     if [[ $? -eq 0 ]]; then
         echo -e "${Info} nvim 已存在"
     else
-        yum install -y neovim
         command -v pip >/dev/null 2>&1
         if [[ $? -ne 0 ]]; then
             echo -e "${Error} 未找到 pip 命令"
-        else
-            pip install neovim
+            exit 1
         fi
+        pip install neovim
         command -v npm >/dev/null 2>&1
         if [[ $? -ne 0 ]]; then
             echo -e "${Error} 未找到 npm 命令"
-        else
-            npm install -g neovim
+            exit 1
         fi
+        npm install -g neovim
+        wget https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz && tar -zxvf  nvim-linux64.tar.gz &&  ln -s /usr/local/nvim-linux64/bin/nvim /usr/bin/nvim     
         command -v nvim >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
             echo -e "${Info} nvim 安装完成"
         else
-            echo -e "${Info} nvim 安装失败"
+            echo -e "${Error} nvim 安装失败"
         fi
     fi
 }
@@ -559,39 +562,39 @@ install_tig() {
 
 customize_nvim() {
     command -v nvim >/dev/null 2>&1
-    if [[ $? -eq 0 ]]; then
+    if [[ $? -ne 0 ]]; then
         echo -e "${Error} 未找到 nvim "
     else
         if [ -d '/root/.config/nvim' ]; then
             mv /root/.config/nvim /root/.config/nvim_bak
             echo -e "${Tip} /root/.config/nvim 目录已存在 已重命名为 nvim_bak"
         fi
-        mkdir -p /root/.config/nvim/autoload
-        wget https://wei-picgo.oss-cn-beijing.aliyuncs.com/init.vim -O /root/.config/nvim
-        wget -P /root/.config/nvim/autoload https://wei-picgo.oss-cn-beijing.aliyuncs.com/plug.vim
+        cd /root/.config && git clone git@github.com:zuishuaiweiwei/nvim.git
+        # mkdir -p /root/.config/nvim/autoload
+        # wget -P /root/.config/nvim https://wei-picgo.oss-cn-beijing.aliyuncs.com/init.vim &&
+        # wget -P /root/.config/nvim/autoload https://wei-picgo.oss-cn-beijing.aliyuncs.com/plug.vim
     fi
 }
 
 install_python3() {
 
     if [[ -n $(python -V | awk '{print $2}' | grep '^3.*') ]]; then
-        echo -e "${Info} python 已经是3版本"
-    else
+        echo -e "${Info} python3 已存在"
+        exit 1
+    fi
+        if [[ -n $(python3 -V | awk '{print $2}' | grep '^3.*') ]]; then
+        echo -e "${Info} python3 已存在"
+        exit 1
+    fi
         yum -y install zlib-devel bzip2-devel readline-devel sqlite sqlite-devel openssl-devel xz xz-devel libffi-devel python3-dev
         wget http://npm.taobao.org/mirrors/python/3.8.0/Python-3.8.0.tgz -P /usr/local
-        tar -zxvf /usr/local/Python-3.8.0.tgz && cd /usr/local/Python-3.8.0 && mkdir /usr/local/python3 && configure --prefix=/usr/local/python3 && make && make install
-        # if [ -x '/usr/bin/python' ]; then
-        #     mv /usr/bin/python /usr/bin/python_bak
-        #     echo -e "${Tip} /usr/bin/python 已存在 已重命名为 python_bak"
-        # fi
-        # if [ -x '/usr/bin/pip' ]; then
-        #     mv /usr/bin/pip /usr/bin/pip_bak
-        #     echo -e "${Tip} /usr/bin/pip 已存在 已重命名为 pip_bak"
-        # fi
-        #sed  '1c#!\/usr\/bin\/python_bak'  /usr/bin/yum
-        #sed  '1c#!\/usr\/bin\/python_bak'  /usr/libexec/urlgrabber-ext-down
-        ln -s /usr/local/python3/bin/python3 /usr/bin/python3
-        ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3
+        tar -zxvf /usr/local/Python-3.8.0.tgz
+        if [ ! -d '/usr/local/Python-3.8.0' ]; then
+             echo -e "${Error} 未找到解压后的文件夹"
+             return 1
+        fi
+        cd /usr/local/Python-3.8.0 && mkdir /usr/local/python3 && chmod u+x configure && sh configure --prefix=/usr/local/python3 && make && make install 
+        ln -s /usr/local/python3/bin/python3 /usr/bin/python3 && ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3
         if [[ -n $(python -V | awk '{print $2}' | grep '^3.*') ]]; then
             pip install --upgrade pip
             echo -e "${Info} python3 安装完成"
@@ -599,8 +602,6 @@ install_python3() {
         else
             echo -e "${Error} python3 安装失败"
         fi
-
-    fi
 
 }
 
@@ -616,7 +617,7 @@ install_docker_compose() {
         if [[ $? -eq 0 ]]; then
             echo -e "${Info} dcoker-compose 安装完成"
         else
-            echo -e "${Info} dcoker-compose 安装失败"
+            echo -e "${Error} dcoker-compose 安装失败"
         fi
     fi
 }
@@ -632,7 +633,7 @@ install_ranger() {
         if [[ $? -eq 0 ]]; then
             echo -e "${Info} ranger 安装完成"
         else
-            echo -e "${Info} ranger 安装失败"
+            echo -e "${Error} ranger 安装失败"
         fi
     fi
 }
@@ -640,24 +641,25 @@ install_ranger() {
 install_jenkins() {
     command -v java >/dev/null 2>&1
     if [[ $? -ne 0 ]]; then
-        echo -e "${Error} java 不存在"
-        exit 1
+        echo -e "${Error} java 不存在,开始安装jdk"
+        install_jdk
+        command -v java >/dev/null 2>&1
+        if [[ $? -ne 0 ]]; then
+            echo -e "${Error} jdk 安装失败"
+            exit 1
+        fi
     fi
     v_name="jenkins"
     command -v $v_name >/dev/null 2>&1
     if [[ $? -eq 0 ]]; then
         echo -e "${Info} $v_name 已存在"
     else
-        wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo &&
-            rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key &&
-            yum install jenkins -y
-
+        wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo && rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key && yum install jenkins -y
         command -v $v_name >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
             echo -e "${Info} $v_name 安装完成"
-
         else
-            echo -e "${Info} $v_name 安装失败"
+            echo -e "${Error} $v_name 安装失败"
         fi
     fi
 }
@@ -669,16 +671,32 @@ install_lazygit() {
     if [[ $? -eq 0 ]]; then
         echo -e "${Info} $v_name 已存在"
     else
-        dnf install $v_name
-
+        dnf copr enable atim/lazygit -y && dnf install $v_name
         command -v $v_name >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
             echo -e "${Info} $v_name 安装完成"
-
         else
-            echo -e "${Info} $v_name 安装失败"
+            echo -e "${Error} $v_name 安装失败"
         fi
     fi
+}
+
+install_ag() {
+    v_name="ag"
+    command -v $v_name >/dev/null 2>&1
+
+    if [[ $? -eq 0 ]]; then
+        echo -e "${Info} $v_name 已存在"
+        exit 0j
+    fi
+        yum install epel-release
+        yum install the_silver_searcher
+        command -v $v_name >/dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
+            echo -e "${Info} $v_name 安装完成"
+            exit 0
+        fi
+            echo -e "${Error} $v_name 安装失败"
 }
 
 set_editor() {
@@ -691,7 +709,7 @@ echo -e "  初始化脚本
   ${Green_font_prefix}1b.${Font_color_suffix} 安装 python3
   ${Green_font_prefix}1c.${Font_color_suffix} 安装 nodejs
  ———————————— 安装基础命令 
-  ${Green_font_prefix}2a.${Font_color_suffix} 安装 git/wget/glances/tmux/lsof/bzip2/gcc/pstree/dnf
+  ${Green_font_prefix}2a.${Font_color_suffix} 安装 git/wget/htop/tmux/lsof/bzip2/gcc/pstree/dnf
  ———————————— 安装进阶命令
   ${Green_font_prefix}3a.${Font_color_suffix} 安装 zsh && oh-my-zsh
   ${Green_font_prefix}3b.${Font_color_suffix} 安装 nvim
@@ -707,6 +725,7 @@ echo -e "  初始化脚本
   ${Green_font_prefix}3l.${Font_color_suffix} 安装 ranger
   ${Green_font_prefix}3m.${Font_color_suffix} 安装 lazygit
   ${Green_font_prefix}3n.${Font_color_suffix} 安装 jenkins
+  ${Green_font_prefix}3o.${Font_color_suffix} 安装 ag
 ———————————— 自定义
  ${Green_font_prefix}4a.${Font_color_suffix} 自定义 nvim
  ${Green_font_prefix}4b.${Font_color_suffix} 自定义 自定义zsh
@@ -727,7 +746,7 @@ case "$num" in
     install_nodejs
     ;;
 2a)
-    install_command git wget glances tmux lsof bzip2 gcc pstree dnf dnf-plugins-core
+    install_command git wget tmux lsof bzip2 gcc pstree htop dnf dnf-plugins-core
     ;;
 3a)
     install_zsh
