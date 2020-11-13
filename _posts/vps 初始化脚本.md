@@ -233,7 +233,11 @@ install_jdk() {
     if [[ $? -eq 0 ]]; then
         echo -e "${Info} jdk 已存在"
     else
-        yum install java-1.8.0-openjdk -y
+        #yum install java-1.8.0-openjdk -y
+        wget https://wei-picgo.oss-cn-beijing.aliyuncs.com/jdk-8u201-linux-x64.tar.gz -P /usr/local
+        cd /usr/local && tar -zxvf jdk-8u201-linux-x64.tar.gz && echo 'export JAVA_HOME=/usr/local/java-1.8.0-openjdk' >>/etc/profile && echo 'export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib' >>/etc/profile  && echo 'export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib' >>/etc/profile && echo 'export PATH=$PATH:$JAVA_HOME/bin' >>/etc/profile 
+        source /etc/profile
+
         command -v java >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
             echo -e "${Info} jdk 安装成功"
